@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuaBanNhaDat", "MuaBanNhaDat\MuaBanNhaDat.csproj", "{790D1BE5-2A83-4012-B89C-9BF957D821BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{30497E32-5388-4852-A6C1-7C6AA7A0ED5B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{790D1BE5-2A83-4012-B89C-9BF957D821BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{790D1BE5-2A83-4012-B89C-9BF957D821BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{790D1BE5-2A83-4012-B89C-9BF957D821BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{790D1BE5-2A83-4012-B89C-9BF957D821BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30497E32-5388-4852-A6C1-7C6AA7A0ED5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30497E32-5388-4852-A6C1-7C6AA7A0ED5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30497E32-5388-4852-A6C1-7C6AA7A0ED5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30497E32-5388-4852-A6C1-7C6AA7A0ED5B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {27DE6DD1-CB16-4809-BC8E-38909A4FAC56}
+	EndGlobalSection
+EndGlobal

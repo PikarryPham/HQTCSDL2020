@@ -1,0 +1,1384 @@
+﻿USE QLBAN_THUENHA
+GO
+/*
+2. Them mot nha: nha thue/nha ban (Trang)
+*/
+
+/*Hàm generate mã nv tự động*/
+IF OBJECT_ID('GENERATE_MANV') IS NOT NULL
+	DROP FUNCTION dbo.GENERATE_MANV
+GO
+CREATE FUNCTION GENERATE_MANV ()
+RETURNS CHAR(5)
+AS
+BEGIN
+	DECLARE @MANV CHAR(5);
+	DECLARE @INDEX INT = 2;
+	SET @MANV = 'NV001';
+	WHILE(EXISTS (SELECT NHANVIEN.MA_NV FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV)) --Lay MANHA co trong NHA + 1
+		BEGIN
+			IF (@INDEX < 10)
+			BEGIN
+				SET @MANV = 'NV00' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 10 AND @INDEX < 100)
+			BEGIN
+				SET @MANV = 'NV0' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 100 AND @INDEX < 1000)
+			BEGIN
+				SET @MANV = 'NV' + CONVERT(CHAR(5),@INDEX)
+			END
+			SET @INDEX = @INDEX + 1
+		END
+	RETURN @MANV
+END
+GO
+/*Hàm generate mã khách hàng tự động*/
+IF OBJECT_ID('GENERATE_MAKH') IS NOT NULL
+	DROP FUNCTION dbo.GENERATE_MAKH
+GO
+CREATE FUNCTION GENERATE_MAKH ()
+RETURNS CHAR(5)
+AS
+BEGIN
+	DECLARE @MAKH CHAR(5);
+	DECLARE @INDEX INT = 2;
+	SET @MAKH = 'KH001';
+	WHILE(EXISTS (SELECT KHACHHANG.MA_KH FROM KHACHHANG WHERE KHACHHANG.MA_KH = @MAKH)) 
+		BEGIN
+			IF (@INDEX < 10)
+			BEGIN
+				SET @MAKH = 'KH00' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 10 AND @INDEX < 100)
+			BEGIN
+				SET @MAKH = 'KH0' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 100 AND @INDEX < 1000)
+			BEGIN
+				SET @MAKH = 'KH' + CONVERT(CHAR(5),@INDEX)
+			END
+			SET @INDEX = @INDEX + 1
+		END
+	RETURN @MAKH
+END
+GO
+
+/*Hàm generate mã chủ nhà tự động*/
+IF OBJECT_ID('GENERATE_MACHUNHA') IS NOT NULL
+	DROP FUNCTION dbo.GENERATE_MACHUNHA
+GO
+CREATE FUNCTION GENERATE_MACHUNHA ()
+RETURNS CHAR(5)
+AS
+BEGIN
+	DECLARE @MACN CHAR(5);
+	DECLARE @INDEX INT = 2;
+	SET @MACN = 'CN001';
+	WHILE(EXISTS (SELECT CHUNHA.MA_CNHA FROM CHUNHA WHERE CHUNHA.MA_CNHA = @MACN)) 
+		BEGIN
+			IF (@INDEX < 10)
+			BEGIN
+				SET @MACN = 'CN00' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 10 AND @INDEX < 100)
+			BEGIN
+				SET @MACN = 'CN0' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 100 AND @INDEX < 1000)
+			BEGIN
+				SET @MACN = 'CN' + CONVERT(CHAR(5),@INDEX)
+			END
+			SET @INDEX = @INDEX + 1
+		END
+	RETURN @MACN
+END
+GO
+
+
+/*Hàm cho phép tạo tài khoản mới*/
+IF OBJECT_ID('CREATE_ACCOUNT_QLNHA','P') IS NOT NULL
+	DROP PROC CREATE_ACCOUNT_QLNHA
+GO
+CREATE PROC CREATE_ACCOUNT_QLNHA
+@USERNAME VARCHAR(50), 
+@PASS VARCHAR(50),
+@TEN NVARCHAR(50),
+@SDT VARCHAR(15),
+@TYPEACCOUNT TINYINT
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF(@TYPEACCOUNT = 1 OR @TYPEACCOUNT = 4) /*Nhân viên*/
+		BEGIN
+			DECLARE @NHANVIENID CHAR(5);
+			SET @NHANVIENID = (SELECT dbo.GENERATE_MANV() AS MANVMOI);
+			INSERT INTO NHANVIEN
+			VALUES(@NHANVIENID, @TEN, @SDT, NULL, NULL, NULL ,@USERNAME, @PASS, 'CI001')
+			PRINT N'Nhân viên đk tài khoản thành công!'
+		END
+		ELSE IF(@TYPEACCOUNT = 2) /*Khách hàng*/
+		BEGIN
+			DECLARE @KHACHHANGID CHAR(5);
+			SET @KHACHHANGID = (SELECT dbo.GENERATE_MAKH() AS MAKHMOI);
+			INSERT INTO KHACHHANG
+			VALUES(@KHACHHANGID, @TEN, @SDT, NULL, NULL ,@USERNAME, @PASS, 'CI001')
+			PRINT N'Khách hàng đk tài khoản thành công!'
+		END
+		ELSE IF(@TYPEACCOUNT = 3) /*Chủ nhà*/
+		BEGIN
+			DECLARE @CHUNHAID CHAR(5);
+			SET @CHUNHAID = (SELECT dbo.GENERATE_MACHUNHA() AS MANHADUOCTAO);
+			INSERT INTO CHUNHA
+			VALUES(@CHUNHAID, @TEN, NULL, @SDT, @USERNAME, @PASS)
+			PRINT N'Chủ nhà đk tài khoản thành công!'
+		END
+	END TRY
+	BEGIN CATCH
+		PRINT N'Tạo tk thất bại'
+		ROLLBACK TRANSACTION
+		RETURN
+	END CATCH
+	PRINT N'Tạo tk thành công'
+COMMIT TRANSACTION
+
+EXEC CREATE_ACCOUNT_QLNHA 'happxmas','happyxmas',N'Trần Chí Vỹ','0123567890',1
+
+
+/*Hàm kiểm tra kết quả đăng nhập*/
+/*Về phía chủ nhà*/
+IF OBJECT_ID('USP_LOGIN_CN','P') IS NOT NULL
+	DROP PROC USP_LOGIN_CN
+GO
+CREATE PROC USP_LOGIN_CN
+@USERNAME VARCHAR(50), 
+@PASS VARCHAR(50)
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF NOT EXISTS (SELECT * FROM CHUNHA WHERE CHUNHA.USER_CNHA = @USERNAME)
+		BEGIN
+			PRINT N'Username không tồn tại';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+		IF NOT EXISTS (SELECT * FROM CHUNHA WHERE CHUNHA.USER_CNHA = @USERNAME AND CHUNHA.PASS_CNHA = @PASS)
+		BEGIN
+			PRINT N'Sai mật khẩu';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+	END TRY
+	BEGIN CATCH
+		PRINT N'Lỗi đăng nhập'
+		ROLLBACK TRANSACTION;
+	END CATCH
+	PRINT N'Đăng nhập thành công'
+COMMIT TRANSACTION
+
+EXEC USP_LOGIN_CN 'hnglinh','hnglinh'
+
+
+/*Về phía KH*/
+IF OBJECT_ID('USP_LOGIN_KH_QLNHA','P') IS NOT NULL
+	DROP PROC USP_LOGIN_KH_QLNHA
+GO
+CREATE PROC USP_LOGIN_KH_QLNHA
+@USERNAME VARCHAR(50), 
+@PASS VARCHAR(50)
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF NOT EXISTS (SELECT * FROM KHACHHANG WHERE KHACHHANG.USER_KH = @USERNAME)
+		BEGIN
+			PRINT N'Username không tồn tại';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+		IF NOT EXISTS (SELECT * FROM KHACHHANG WHERE KHACHHANG.USER_KH = @USERNAME AND KHACHHANG.PASS_KH = @PASS)
+		BEGIN
+			PRINT N'Sai mật khẩu';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+	END TRY
+	BEGIN CATCH
+		PRINT N'Lỗi đăng nhập'
+		ROLLBACK TRANSACTION;
+	END CATCH
+	PRINT N'Đăng nhập thành công'
+COMMIT TRANSACTION
+
+/*Về phía nhân viên*/
+IF OBJECT_ID('USP_LOGIN_NHANVIEN','P') IS NOT NULL
+	DROP PROC USP_LOGIN_NHANVIEN
+GO
+CREATE PROC USP_LOGIN_NHANVIEN
+@USERNAME VARCHAR(50), 
+@PASS VARCHAR(50)
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.USER_NV = @USERNAME)
+		BEGIN
+			PRINT N'Username không tồn tại';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+		IF NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.USER_NV = @USERNAME AND NHANVIEN.PASS_NV = @PASS)
+		BEGIN
+			PRINT N'Sai mật khẩu';
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+	END TRY
+	BEGIN CATCH
+		PRINT N'Lỗi đăng nhập'
+		ROLLBACK TRANSACTION;
+	END CATCH
+	PRINT N'Đăng nhập thành công'
+COMMIT TRANSACTION
+
+EXEC USP_LOGIN_NHANVIEN 'lamchikhanh','123456789'
+/*Function tạo mã nhà tự động*/
+IF OBJECT_ID('GENERATE_MANHA') IS NOT NULL
+	DROP FUNCTION dbo.GENERATE_MANHA
+GO
+
+CREATE FUNCTION GENERATE_MANHA ()
+RETURNS CHAR(5)
+AS
+BEGIN
+	DECLARE @MANHA CHAR(5);
+	DECLARE @INDEX INT = 2;
+	SET @MANHA = 'N0001';
+	WHILE(EXISTS (SELECT NHA.MA_NHA FROM NHA WHERE NHA.MA_NHA = @MANHA)) --Lay MANHA co trong NHA + 1
+		BEGIN
+			IF (@INDEX < 10)
+			BEGIN
+				SET @MANHA = 'N000' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 10 AND @INDEX < 100)
+			BEGIN
+				SET @MANHA = 'N00' + CONVERT(CHAR(5),@INDEX)
+			END
+			ELSE IF (@INDEX >= 100 AND @INDEX < 1000)
+			BEGIN
+				SET @MANHA = 'N0' + CONVERT(CHAR(5),@INDEX)
+			END
+			SET @INDEX = @INDEX + 1
+		END
+	RETURN @MANHA
+END
+GO
+
+DECLARE @MANHAMOI CHAR(5);
+SET @MANHAMOI = (SELECT dbo.GENERATE_MANHA() AS MANHADUOCTAO);
+PRINT @MANHAMOI
+
+/*Transaction thêm nhà thuê mới*/
+--Làm sao để biết được chủ nhà hiện tại là ai????
+--mặc định chủ nhà trong bài toán này là chủ nhà "CN001"
+
+IF OBJECT_ID('INSERT_HOUSE_THUE','P') IS NOT NULL
+	DROP PROC INSERT_HOUSE_THUE
+GO
+CREATE PROCEDURE INSERT_HOUSE_THUE 
+@LOAINHA CHAR(5), 
+@NGAYHETHAN DATE, 
+@SLPHONG INTEGER, 
+@TINHTRANG NVARCHAR(100), 
+@TIENTHUE INTEGER,
+@KHUVUC NVARCHAR(30),
+@DUONG NVARCHAR(30),
+@QUAN NVARCHAR(30),
+@TPHO NVARCHAR(40),
+@CHINHANHDK CHAR(5)
+AS
+BEGIN TRANSACTION 
+	BEGIN TRY
+		DECLARE @MANHAMOI CHAR(5);
+		SET @MANHAMOI = (SELECT dbo.GENERATE_MANHA() AS MANHADUOCTAO);
+		DECLARE @NGAYDANGBAI DATE = CONVERT (date, SYSDATETIME());
+		--Nếu loại nhà insert vào không tồn tại
+		IF NOT EXISTS (SELECT * FROM LOAINHA WHERE LOAINHA.MA_LN = @LOAINHA)
+		BEGIN
+			PRINT N'Loại nhà này không tồn tại'
+			ROLLBACK TRANSACTION
+			RETURN;
+		END
+		--Nếu chi nhánh đăng ký insert vào không tồn tại
+		IF NOT EXISTS (SELECT * FROM CHINHANH WHERE CHINHANH.MA_CN = @CHINHANHDK)
+		BEGIN
+			PRINT N'Chi nhánh này không tồn tại'
+			ROLLBACK TRANSACTION
+			RETURN;
+		END
+		--Mặc định lấy mã nhân viên đầu tiên có làm việc tại chi nhánh được truyền vào, sau này nếu sửa đổi thì do trưởng phòng sửa
+		DECLARE @NVPHUTRACH CHAR(5) = (SELECT TOP 1 NHANVIEN.MA_NV FROM NHANVIEN
+											WHERE NHANVIEN.LAMVIEC = @CHINHANHDK
+														ORDER BY NHANVIEN.MA_NV ASC)
+		INSERT INTO NHA(MA_NHA,NGAYDANG,NGAYHETHAN,SLPHONG,TINHTRANG,VIEW_NHA,NVPT,MA_CN,MALN,MA_CNHA,TRANGTHAI)
+		VALUES(@MANHAMOI,@NGAYDANGBAI,@NGAYHETHAN,@SLPHONG,@TINHTRANG,0,@NVPHUTRACH,@CHINHANHDK,@LOAINHA,'CN001',0)
+
+		INSERT INTO NHATHUE VALUES(@MANHAMOI,@TIENTHUE);
+		INSERT INTO DCHINHA VALUES(@MANHAMOI, @KHUVUC, @DUONG, @QUAN, @TPHO);
+	END TRY
+	BEGIN CATCH
+		PRINT N'Không thể insert thêm nhà mới'
+		ROLLBACK TRANSACTION
+		RETURN;
+	END CATCH
+	PRINT N'Thêm nhà thuê mới thành công'
+	COMMIT TRANSACTION
+GO
+
+EXEC INSERT_HOUSE_THUE 'LN004','2020-12-27',3,N'Nhà cho thuê nguyên căn mặt tiền đường có đầy đủ giấy tờ',200,'KVI', N'Nguyễn Văn Qúa','Q.12','TP.HCM','CI001'
+
+DELETE FROM NHABAN WHERE NHABAN.MA_NHA = 'N0011'
+DELETE FROM DCHINHA WHERE DCHINHA.MA_NHA = 'N0011'
+DELETE FROM NHA WHERE NHA.MA_NHA = 'N0011'
+
+
+SELECT * FROM NHA, NHABAN, DCHINHA WHERE NHA.MA_NHA = 'N0011' AND NHABAN.MA_NHA = 'N0011' AND DCHINHA.MA_NHA = 'N0011'
+
+/*Transaction thêm nhà bán mới*/
+IF OBJECT_ID('INSERT_HOUSE_BAN_CHUNHA','P') IS NOT NULL
+	DROP PROC INSERT_HOUSE_BAN_CHUNHA
+GO
+CREATE PROCEDURE INSERT_HOUSE_BAN_CHUNHA
+@LOAINHA CHAR(5), 
+@NGAYHETHAN DATE, 
+@SLPHONG INTEGER, 
+@TINHTRANG NVARCHAR(100), 
+@GIABAN INTEGER,
+@KHUVUC NVARCHAR(30),
+@DUONG NVARCHAR(30),
+@QUAN NVARCHAR(30),
+@TPHO NVARCHAR(40),
+@CHINHANHDK CHAR(5),
+@DIEUKIENCHUNHA NVARCHAR(50)
+AS
+BEGIN TRANSACTION 
+	BEGIN TRY
+		DECLARE @MANHAMOI CHAR(5);
+		SET @MANHAMOI = (SELECT dbo.GENERATE_MANHA() AS MANHADUOCTAO);
+		DECLARE @NGAYDANGBAI DATE = CONVERT (date, SYSDATETIME());
+		--Nếu loại nhà insert vào không tồn tại
+		IF NOT EXISTS (SELECT * FROM LOAINHA WHERE LOAINHA.MA_LN = @LOAINHA)
+		BEGIN
+			PRINT N'Loại nhà này không tồn tại'
+			ROLLBACK TRANSACTION
+			RETURN;
+		END
+		--Nếu chi nhánh đăng ký insert vào không tồn tại
+		IF NOT EXISTS (SELECT * FROM CHINHANH WHERE CHINHANH.MA_CN = @CHINHANHDK)
+		BEGIN
+			PRINT N'Chi nhánh này không tồn tại'
+			ROLLBACK TRANSACTION
+			RETURN;
+		END
+		--Mặc định lấy mã nhân viên đầu tiên có làm việc tại chi nhánh được truyền vào, sau này nếu sửa đổi thì do trưởng phòng sửa
+		DECLARE @NVPHUTRACH CHAR(5) = (SELECT TOP 1 NHANVIEN.MA_NV FROM NHANVIEN
+											WHERE NHANVIEN.LAMVIEC = @CHINHANHDK
+														ORDER BY NHANVIEN.MA_NV ASC)
+		INSERT INTO NHA(MA_NHA,NGAYDANG,NGAYHETHAN,SLPHONG,TINHTRANG,VIEW_NHA,NVPT,MA_CN,MALN,MA_CNHA,TRANGTHAI)
+		VALUES(@MANHAMOI,@NGAYDANGBAI,@NGAYHETHAN,@SLPHONG,@TINHTRANG,0,@NVPHUTRACH,@CHINHANHDK,@LOAINHA,'CN001',0)
+
+		INSERT INTO NHABAN VALUES(@MANHAMOI, @GIABAN, @DIEUKIENCHUNHA);
+		INSERT INTO DCHINHA VALUES(@MANHAMOI, @KHUVUC, @DUONG, @QUAN, @TPHO);
+	END TRY
+	BEGIN CATCH
+		PRINT N'Không thể insert thêm nhà mới'
+		ROLLBACK TRANSACTION
+		RETURN;
+	END CATCH
+	PRINT N'Thêm nhà bán mới thành công'
+COMMIT TRANSACTION
+EXEC INSERT_HOUSE_BAN_CHUNHA 'LN003','2021-01-20',2,N'Nhà cho bán nguyên căn mặt tiền đường có đầy đủ giấy tờ',400000,'KVI', N'Nguyễn Văn Cừ','Q.5','TP.HCM','CI001',N'Đặt cọc trước 50% . Nếu hủy sẽ hoàn tiền lại gấp đôi'
+--SELECT CONVERT (date, SYSDATETIME())
+
+DELETE NHA WHERE NHA.MA_NHA = 'N0011'
+DELETE NHABAN WHERE NHABAN.MA_NHA = 'N0011'
+DELETE DCHINHA WHERE DCHINHA.MA_NHA  = 'N0011'
+
+
+/*Transaction quản lý danh sách tất cả nhân viên tại chi nhánh đó*/
+
+IF OBJECT_ID('QL_TATCANV_NVQL','P') IS NOT NULL
+	DROP PROC QL_TATCANV_NVQL
+GO
+
+
+CREATE PROCEDURE QL_TATCANV_NVQL
+@NVQL CHAR(5),
+@MANV CHAR(5) = NULL, /*Gía trị mặc định là null*/
+@UPDATESALARY BIT = 0,
+@LUONG FLOAT = 0
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		--Không cho phép mã nhân viên và mã nhân viên quản lý là như nhau ==> vì bản thân nhân viên quản lý k thể xóa chính họ ra khỏi bảng nhân viên hoặc cập nhật lương cho mình
+		IF (@MANV = @NVQL)
+		BEGIN
+			PRINT N'Không thể cập nhật lương hoặc xóa chính bản thân nhân viên quản lý'
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+		--Không cho phép mã nhân viên truyền vào là một nhân viên quản lý khác
+		IF (EXISTS (SELECT * FROM CHINHANH WHERE CHINHANH.NVQUANLY = @MANV))
+		BEGIN
+			PRINT N'Không được xóa/cập nhật lương của nhân viên quản lý khác';
+			ROLLBACK TRANSACTION
+			RETURN;
+		END
+		--Tìm ra chi nhánh của nhân viên quản lý được truyền vào --> hiển thị danh sách các nhân viên do nhân viên quản lý đó quản lý
+		DECLARE @CHINHANHNVQL CHAR(5) = (SELECT NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.MA_NV = @NVQL)
+		--Hiển thị danh sách các nhân viên do nhân viên quản lý đó quản lý
+		PRINT N'Danh sách nhân viên (tính cả nhân viên quản lý) làm việc tại' + @CHINHANHNVQL + N' khi chưa cập nhật lương'
+		SELECT NHANVIEN.MA_NV, NHANVIEN.TEN_NV,
+		NHANVIEN.LUONG, NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.LAMVIEC = @CHINHANHNVQL
+		-- nhân viên quản lý muốn cập nhật lương: có 1 mã nhân viên truyền vào, bit updatesalary thành 1 còn deletenhanvien vẫn là 0
+		IF (@MANV IS NOT NULL AND @UPDATESALARY = 1)
+		BEGIN
+			IF(NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV AND NHANVIEN.LAMVIEC = @CHINHANHNVQL))
+			BEGIN
+				PRINT N'Không tồn tại nhân viên này trong bảng nhân viên'
+				ROLLBACK TRANSACTION
+				RETURN;
+			END
+			ELSE 
+			BEGIN 
+				PRINT N'Cập nhật lương cho nhân viên'
+				UPDATE NHANVIEN
+				SET NHANVIEN.LUONG = @LUONG
+				WHERE NHANVIEN.MA_NV = @MANV
+
+				PRINT N'Danh sách nhân viên (tính cả nhân viên quản lý) làm việc tại' + @CHINHANHNVQL + N' sau khi đã nhật lương'
+				SELECT NHANVIEN.MA_NV, NHANVIEN.TEN_NV,
+				NHANVIEN.LUONG, NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.LAMVIEC = @CHINHANHNVQL
+			END
+		END
+	END TRY
+	BEGIN CATCH
+		PRINT N'Không thể thực hiện chức năng này' 
+		ROLLBACK TRANSACTION
+		RETURN;
+	END CATCH
+	PRINT N'Thành công!'
+COMMIT TRANSACTION
+
+
+EXEC QL_TATCANV_NVQL 'NV001','NV013',1, 5400
+
+
+
+/*4. Tim kiem nha dua tren nhung tieu chi cu the*/
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'TRAN_TIMKIEMTIEUCHI_NB1')
+begin
+	drop procedure TRAN_TIMKIEMTIEUCHI_NB1
+end
+go
+CREATE PROCEDURE TRAN_TIMKIEMTIEUCHI_NB1
+	@GIABAN INTEGER
+AS
+
+	BEGIN TRAN
+	BEGIN TRY 
+	SELECT NHA.MA_NHA,CHUNHA.TEN_CNHA AS CHUNHA, NHA.SLPHONG, NHA.VIEW_NHA, NHABAN.GIABAN, NHA.NGAYDANG, NHA.NGAYHETHAN
+	FROM NHA, NHABAN, CHUNHA
+	WHERE NHA.MA_NHA= NHABAN.MA_NHA AND NHABAN.GIABAN <= @GIABAN AND NHA.MA_CNHA = CHUNHA.MA_CNHA
+	PRINT N'Số lượng nhà thỏa điều kiện trên là'
+
+	SELECT COUNT(*) AS SOLUONGNHATHOADK
+	FROM NHA,NHABAN,CHUNHA
+	WHERE NHA.MA_NHA=NHABAN.MA_NHA AND NHABAN.GIABAN <=@GIABAN AND NHA.MA_CNHA=CHUNHA.MA_CNHA
+	END TRY
+	BEGIN CATCH
+		PRINT N'Không thể Tim kiem nha ban dua tren tieu chi'
+		ROLLBACK TRANSACTION
+		RETURN;
+	END CATCH
+	COMMIT
+GO
+
+EXEC TRAN_TIMKIEMTIEUCHI_NB1 750000
+
+/*6. Chuc nang dashboard, cai dat (4 trang) (Thao)*/
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'TRANGCHU')
+begin
+	drop procedure TRANGCHU
+end
+go
+
+CREATE PROCEDURE TRANGCHU
+AS
+	BEGIN TRAN 
+	PRINT(N'ĐĂNG BÀI')
+	PRINT(N'CHỈNH SỬA THÔNG TIN CÁ NHÂN')
+	PRINT(N'QUẢN LÝ DANH SÁCH NHỮNG NHÀ ĐÃ ĐĂNG')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA CÁC HỢP ĐỒNG')
+	PRINT(N'QUẢN LÝ DANH SÁCH NHỮNG NHÀ ĐƯỢC CHO BÁN/THUÊ')
+	PRINT(N'XEM THÔNG TIN CÁ NHÂN')
+	PRINT(N'ĐĂNG XUẤT')
+	COMMIT
+GO
+
+EXEC TRANGCHU
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'CAIDAT')
+begin
+	drop procedure CAIDAT
+end
+go
+CREATE PROCEDURE CAIDAT
+AS
+	BEGIN TRAN 
+	PRINT(N'CHỈNH SỬA THÔNG TIN CÁ NHÂN')
+	PRINT(N'QUẢN LÝ DANH SÁCH NHỮNG NHÀ ĐÃ XEM/BÌNH LUẬN')
+	PRINT(N'QUẢN LÝ ĐƯỢC THÔNG TIN CỦA CÁC HỢP ĐỒNG')
+	PRINT(N'TÌM NHÀ')
+	PRINT(N'THÔNG')
+	PRINT(N'XEM THÔNG TIN CÁ NHÂN')
+	PRINT(N'ĐĂNG XUẤT')
+	COMMIT
+GO
+
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'TRANGCHUNV')
+begin
+	drop procedure TRANGCHUNV
+end
+go
+CREATE PROCEDURE TRANGCHUNV
+AS
+	BEGIN TRAN 
+	PRINT(N'CHỈNH SỬA THÔNG TIN CÁ NHÂN')
+	PRINT(N'GỬI THÔNG BÁO ĐẾN KHÁCH HÀNG')
+	PRINT(N'GHI LẠI NHẬN XÉT CỦA KHÁCH HÀNG')
+	PRINT(N'THỐNG KÊ NHỮNG NHÀ CẦN BÁN/CHO THUÊ Ở MỘT ĐỊA ĐIỂM NHẤT ĐỊNH')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA TẤT CẢ CÁC HỢP ĐỒNG')
+	PRINT(N'LẬP HỢP ĐỒNG THUÊ/BÁN NHÀ')
+	PRINT(N'XEM THÔNG TIN CÁ NHÂN')
+	PRINT(N'ĐĂNG XUẤT')
+	COMMIT
+GO
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'TRANGCHUQUANLY')
+begin
+	drop procedure TRANGCHUQUANLY
+end
+go
+
+CREATE PROCEDURE TRANGCHUQUANLY
+AS
+	BEGIN TRAN 
+	PRINT(N'CHỈNH SỬA THÔNG TIN CÁ NHÂN')
+	PRINT(N'QUẢN LÝ THÔNG TIN QUÁ TRÌNH THUÊ/BÁN CỦA CHỦ NHÀ')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA CÁC NHÂN VIÊN')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA CÁC HỢP ĐỒNG')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA CÁC KHÁCH HÀNG THUỘC VỀ CHI NHÁNH')
+	PRINT(N'XEM THÔNG CÁ NHÂN')
+	PRINT(N'QUẢN LÝ THÔNG TIN CỦA MỘT NHÂN VIÊN BẤT KỲ')
+	PRINT(N'ĐĂNG XUẤT')
+	COMMIT
+GO
+
+/*Thống kê những nhà cần bán/cho thuê ở một địa điểm nhất định */
+IF OBJECT_ID('THONGKE','P') IS NOT NULL
+	DROP PROC THONGKE
+GO
+
+CREATE PROCEDURE THONGKE @MANV CHAR(5) = 'NV001',@QUAN NVARCHAR(30) = NULL, @TPHO NVARCHAR(40) = 'TP.HCM'
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF (NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV))
+		BEGIN
+			PRINT N'Không tồn tại mã nhân viên này'
+			ROLLBACK TRANSACTION;
+			RETURN;
+		END
+		DECLARE @CHINHANH_LAMVIEC CHAR(5) = (SELECT NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV)
+		--Danh sách các nhà cần bán/cho thuê trong 3 tháng trở lại đây
+		IF(@QUAN IS NULL AND @TPHO IS NOT NULL)
+		BEGIN 
+			SELECT N.MA_NHA, N.SLPHONG, N.VIEW_NHA, N.NVPT, N.MA_CN, N.MA_CNHA, LN.TENLN, N.NGAYDANG, N.TRANGTHAI
+			FROM NHA AS N, LOAINHA AS LN, DCHINHA AS DC
+			WHERE N.MA_CN = @CHINHANH_LAMVIEC AND LN.MA_LN = N.MALN AND DC.MA_NHA = N.MA_NHA AND DC.TPHO = @TPHO
+		END
+		-- REPORT THỐNG KÊ DANH SÁCH CÁC NHÀ ĐƯỢC ĐĂNG BÁN/CHO THUÊ Ở XXX TRONG 3 THÁNG 
+		PRINT N'BÁO CÁO THỐNG KÊ DANH SÁCH CÁC NHÀ ĐƯỢC ĐĂNG BÁN/CHO THUÊ Ở' + @TPHO 
+		DECLARE @NGAYBAOCAO DATE = CONVERT (date, SYSDATETIME());
+		-- In thông tin nhân viên làm báo cáo
+			SELECT NHANVIEN.TEN_NV, @NGAYBAOCAO, NHANVIEN.LAMVIEC
+			FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV;
+		-- In danh sách nhà 
+			SELECT N.MA_NHA, N.SLPHONG, N.VIEW_NHA, N.NVPT, N.MA_CN, N.MA_CNHA, LN.TENLN, N.NGAYDANG, N.TRANGTHAI
+			FROM NHA AS N, LOAINHA AS LN, DCHINHA AS DC
+			WHERE N.MA_CN = @CHINHANH_LAMVIEC AND LN.MA_LN = N.MALN AND DC.MA_NHA = N.MA_NHA AND DC.TPHO = @TPHO
+		-- Tổng số lượng nhà đã bán/cho thuê
+			SELECT COUNT(*) AS SUMNHADABAN_THUE 
+			FROM NHA, DCHINHA
+			WHERE NHA.MA_CN = @CHINHANH_LAMVIEC AND DCHINHA.MA_NHA = NHA.MA_NHA AND DCHINHA.TPHO = @TPHO AND NHA.TRANGTHAI = 1
+			GROUP BY NHA.TRANGTHAI
+		-- Tổng số lượng nhà chưa bán/chưa cho thuê
+			SELECT COUNT(*) AS SUMNHACHUABAN_THUE
+			FROM NHA, DCHINHA
+			WHERE NHA.MA_CN = @CHINHANH_LAMVIEC AND DCHINHA.MA_NHA = NHA.MA_NHA AND DCHINHA.TPHO = @TPHO AND NHA.TRANGTHAI = 0
+			GROUP BY NHA.TRANGTHAI
+	END TRY
+	BEGIN CATCH
+		PRINT N'Không thể báo cáo'
+		ROLLBACK TRANSACTION
+		RETURN;
+	END CATCH
+COMMIT TRANSACTION
+
+
+EXEC THONGKE 
+
+/* Thong tin chi tiet cua mot nha ban*/
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'thongtinchitiet_NB')
+begin
+	drop procedure thongtinchitiet_NB
+	go
+end
+go
+create procedure thongtinchitiet_NB
+	@MANHA CHAR(5), @MUAHAYKHONG BIT  = 0
+as
+	BEGIN TRAN
+		BEGIN TRY
+					DECLARE @TENCNHA NVARCHAR(20)
+					DECLARE @SLPHONG INTEGER
+					DECLARE @LOAINHA  NVARCHAR(20)
+					DECLARE @GIABAN INTEGER
+					DECLARE @TINHTRANG NVARCHAR(100) 
+					DECLARE @DKCHUNHA NVARCHAR(50)
+					DECLARE @TRANGTHAI BIT
+					DECLARE @XEM INTEGER
+					DECLARE @NGAYDANGBAI DATE
+					DECLARE @NGAYHETHAN DATE
+					DECLARE @DIACHI NVARCHAR(54)
+					SET @DIACHI=(SELECT DCHINHA.DUONG FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)+' '+(SELECT DCHINHA.QUAN FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)+' '+(SELECT DCHINHA.TPHO FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)
+					SET @TENCNHA=(SELECT CHUNHA.TEN_CNHA FROM CHUNHA,NHA WHERE NHA.MA_NHA=@MANHA AND CHUNHA.MA_CNHA=NHA.MA_CNHA)
+					SET @SLPHONG=(SELECT NHA.SLPHONG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+					SET @LOAINHA=(SELECT LOAINHA.TENLN FROM LOAINHA,NHA WHERE NHA.MA_NHA=@MANHA AND LOAINHA.MA_LN=NHA.MALN)
+					SET @GIABAN=(SELECT NHABAN.GIABAN FROM NHABAN WHERE NHABAN.MA_NHA=@MANHA)
+					SET @TINHTRANG=(SELECT NHA.TINHTRANG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+					SET @DKCHUNHA=(SELECT NHABAN.DKCHUNHA FROM NHABAN WHERE NHABAN.MA_NHA=@MANHA)
+					SET @TRANGTHAI=(SELECT NHA.TRANGTHAI FROM NHA WHERE NHA.MA_NHA=@MANHA)
+					SET @XEM=(SELECT NHA.VIEW_NHA FROM NHA WHERE NHA.MA_NHA=@MANHA)
+					SET @NGAYDANGBAI=(SELECT NHA.NGAYDANG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+					SET @NGAYHETHAN=(SELECT NHA.NGAYHETHAN FROM NHA WHERE NHA.MA_NHA=@MANHA)
+	
+					PRINT(N'Xem :'+CAST(@XEM AS CHAR(3)))
+					PRINT(N'Ngày Đăng Bài: '+cast ( @NGAYDANGBAI as char(20)))
+					PRINT(N'Ngày Hết Hạn: '+ cast( @NGAYHETHAN as char(20)))
+					PRINT(N'Địa chỉ: '+@DIACHI)
+					PRINT(N'Chủ nhà: '+@TENCNHA)
+					PRINT(N'Số lượng phòng ở: '+ CAST( @SLPHONG as varchar(10)))
+					PRINT(N'Loại nhà:'+@LOAINHA)
+					PRINT(N'Giá bán: '+CAST(@GIABAN AS VARCHAR(10)))
+					PRINT(N'Tình trạng: '+@TINHTRANG)
+					PRINT(N'Điều kiện chủ nhà: '+@DKCHUNHA)
+					IF (@TRANGTHAI=0)
+					BEGIN
+						PRINT(N'Trạng thái: Chưa bán');
+					END
+					ELSE PRINT(N'Trạng thái: Đã bán');
+					PRINT(N'Bình luận:')
+					DECLARE @MAKH NVARCHAR(20),@BINHLUAN NVARCHAR(100);
+					declare cursor_binhluan CURSOR
+					FOR SELECT KHACHHANG.TEN_KH,XEM.BINHLUAN FROM XEM,KHACHHANG
+					WHERE KHACHHANG.MA_KH=XEM.MA_KH AND XEM.MA_NHA = @MANHA
+					OPEN CURSOR_BINHLUAN;
+					FETCH NEXT FROM CURSOR_BINHLUAN INTO
+					@MAKH,
+					@BINHLUAN;
+					WHILE(@@FETCH_STATUS=0)
+					BEGIN
+						PRINT @MAKH +'-'+ @BINHLUAN
+						FETCH NEXT FROM CURSOR_BINHLUAN INTO
+							@MAKH, 
+							@BINHLUAN;
+					END;
+					CLOSE CURSOR_BINHLUAN
+					DEALLOCATE CURSOR_BINHLUAN
+					-----
+					IF (@MUAHAYKHONG = 1)
+					BEGIN
+						DECLARE @TRANGTHAINHA BIT = (SELECT NHA.TRANGTHAI FROM NHA WHERE NHA.MA_NHA = @MANHA)
+						IF (@TRANGTHAINHA = 1)
+						BEGIN
+									PRINT N' NHÀ ĐÃ ĐƯỢC BÁN RỒI. KHÔNG THỂ MUA NỮA';
+									ROLLBACK TRANSACTION
+									RETURN;
+						END
+						ELSE 
+						BEGIN
+									PRINT N'THÔNG TIN NHÀ BẠN ĐĂNG KÝ MUA SƠ LƯỢC GỒM'
+									SELECT NHA.MA_NHA, CHUNHA.TEN_CNHA, NHABAN.GIABAN
+									FROM NHA, CHUNHA, NHABAN WHERE NHABAN.MA_NHA = @MANHA AND NHA.MA_NHA = @MANHA AND CHUNHA.MA_CNHA = NHA.MA_CNHA
+						END
+					END
+			END TRY
+			BEGIN CATCH
+				PRINT N'CHỨC NĂNG NÀY KHÔNG THỂ THỰC HIỆN THÀNH CÔNG'
+				ROLLBACK TRANSACTION;
+				RETURN
+			END CATCH
+			PRINT N'CHỨC NĂNG NÀY ĐÃ THỰC HIỆN THÀNH CÔNG'
+	COMMIT
+GO
+
+exec thongtinchitiet_NB 'N0001',0
+
+/* Thong tin chi tiet cua mot nha thue*/
+IF EXISTS(SELECT 1 FROM sys.procedures 
+          WHERE Name = 'thongtinchitiet_NT')
+begin
+	drop procedure thongtinchitiet_NT
+end
+go
+create procedure thongtinchitiet_NT
+	@MANHA CHAR(5), @QUYETDINHTHUE BIT = 0
+as
+	BEGIN TRAN
+		BEGIN TRY
+				DECLARE @TENCNHA nCHAR(20)
+				DECLARE @SLPHONG INTEGER
+				DECLARE @LOAINHA  NVARCHAR(20)
+				DECLARE @GIATHUE INTEGER
+				DECLARE @TINHTRANG NVARCHAR(100) 
+				DECLARE @TRANGTHAI BIT
+				DECLARE @DIACHI NVARCHAR(54)
+				DECLARE @NGAYDANGBAI DATE
+				DECLARE @NGAYHETHAN DATE
+				DECLARE @XEM INTEGER
+				SET @TENCNHA=(SELECT CHUNHA.TEN_CNHA FROM CHUNHA,NHA WHERE NHA.MA_NHA=@MANHA AND CHUNHA.MA_CNHA=NHA.MA_CNHA)
+				SET @SLPHONG=(SELECT NHA.SLPHONG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				SET @LOAINHA=(SELECT LOAINHA.TENLN FROM LOAINHA,NHA WHERE NHA.MA_NHA=@MANHA AND LOAINHA.MA_LN=NHA.MALN)
+				SET @GIATHUE=(SELECT NHATHUE.TIENTHUETHANG FROM NHATHUE WHERE NHATHUE.MA_NHA=@MANHA)
+				SET @TINHTRANG=(SELECT NHA.TINHTRANG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				SET @TRANGTHAI=(SELECT NHA.TRANGTHAI FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				SET @DIACHI=(SELECT DCHINHA.DUONG FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)+' '+(SELECT DCHINHA.QUAN FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)+' '+(SELECT DCHINHA.TPHO FROM DCHINHA WHERE DCHINHA.MA_NHA=@MANHA)
+				SET @NGAYDANGBAI=(SELECT NHA.NGAYDANG FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				SET @NGAYHETHAN=(SELECT NHA.NGAYHETHAN FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				SET @XEM=(SELECT NHA.VIEW_NHA FROM NHA WHERE NHA.MA_NHA=@MANHA)
+				PRINT(N'Xem :'+CAST(@XEM AS CHAR(3)))
+				PRINT(N'Ngày Đăng Bài: '+cast ( @NGAYDANGBAI as char(20)))
+				PRINT(N'Ngày Hết Hạn: '+ cast( @NGAYHETHAN as char(20)))
+				PRINT(N'Địa chỉ: '+@DIACHI)
+				PRINT(N'Chủ nhà: '+@TENCNHA)
+				PRINT(N'Số lượng phòng ở: '+ CAST( @SLPHONG as varchar(10)))
+				PRINT(N'Loại nhà:'+@LOAINHA)
+				PRINT(N'Giá Thuê 1 Tháng: '+CAST(@GIATHUE AS VARCHAR(10)))
+				PRINT(N'Tình trạng: '+@TINHTRANG)
+				IF (@TRANGTHAI=0)
+				BEGIN
+					PRINT(N'Trạng thái: Chưa thuê');
+				END
+				ELSE PRINT(N'Trạng thái: Đã thuê');
+				DECLARE @MAKH NVARCHAR(20),@BINHLUAN NVARCHAR(100);
+				PRINT(N'Bình luận:')
+				declare cursor_binhluan CURSOR
+				FOR SELECT KHACHHANG.TEN_KH,XEM.BINHLUAN FROM XEM,KHACHHANG
+				WHERE KHACHHANG.MA_KH=XEM.MA_KH AND XEM.MA_NHA = @MANHA
+				OPEN CURSOR_BINHLUAN;
+				FETCH NEXT FROM CURSOR_BINHLUAN INTO
+				@MAKH,
+				@BINHLUAN;
+				WHILE(@@FETCH_STATUS=0)
+				BEGIN
+					PRINT @MAKH +'-'+@BINHLUAN
+					FETCH NEXT FROM CURSOR_BINHLUAN INTO
+						@MAKH, 
+						@BINHLUAN;
+				END;
+				CLOSE CURSOR_BINHLUAN
+				DEALLOCATE CURSOR_BINHLUAN
+				IF (@QUYETDINHTHUE = 1)
+							BEGIN
+								DECLARE @TRANGTHAINHA BIT = (SELECT NHA.TRANGTHAI FROM NHA WHERE NHA.MA_NHA = @MANHA)
+								IF (@TRANGTHAINHA = 1)
+								BEGIN
+										PRINT N' NHÀ ĐÃ ĐƯỢC CHO THUÊ RỒI. KHÔNG THỂ THUÊ NỮA';
+										ROLLBACK TRANSACTION;
+										RETURN;
+								END
+								ELSE IF (@TRANGTHAINHA != 1)
+								BEGIN
+										PRINT N'THÔNG TIN NHÀ BẠN ĐĂNG KÝ THUÊ SƠ LƯỢC GỒM'
+										SELECT NHA.MA_NHA, CHUNHA.TEN_CNHA, NT.TIENTHUETHANG
+										FROM NHA, CHUNHA, NHATHUE AS NT WHERE NT.MA_NHA = @MANHA AND NHA.MA_NHA = @MANHA AND CHUNHA.MA_CNHA = NHA.MA_CNHA
+								END
+		
+							END
+	END TRY
+	BEGIN CATCH
+		PRINT N'CHỨC NĂNG NÀY KHÔNG THỂ THỰC HIỆN THÀNH CÔNG'
+		ROLLBACK TRANSACTION;
+		RETURN
+	END CATCH
+	PRINT N'CHỨC NĂNG NÀY ĐÃ THỰC HIỆN THÀNH CÔNG'
+	COMMIT TRAN
+	go
+exec thongtinchitiet_NT 'N0008', 1
+
+-- Chức năng quản lý 1 nhân viên (quản lý)
+IF OBJECT_ID('dbo.chucnangquanly_select','P') IS NOT NULL
+BEGIN
+	drop proc chucnangquanly_select
+END
+go
+create proc chucnangquanly_select @MANV CHAR(5), @LUONG FLOAT , @SDT VARCHAR(15), @DCHI_NV NVARCHAR(250)
+as 
+begin transaction
+BEGIN TRY
+		select MA_NV, TEN_NV, SDT, DCHI_NV, NGSINH, LUONG, USER_NV, LAMVIEC
+		from NHANVIEN
+		where MA_NV = @MANV
+		IF @LUONG IS NOT NULL
+		BEGIN
+			UPDATE NHANVIEN SET LUONG = @LUONG WHERE MA_NV = @MANV
+		END
+		IF @DCHI_NV IS NOT NULL
+		BEGIN
+			UPDATE NHANVIEN SET DCHI_NV = @DCHI_NV WHERE MA_NV = @MANV
+		END
+		IF @SDT IS NOT NULL
+		BEGIN
+			UPDATE NHANVIEN SET SDT = @SDT WHERE MA_NV = @MANV
+		END
+		--SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV
+END TRY
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+--exec chucnangquanly_select @MANV = 'NV001', @LUONG = '2000'
+--GO
+
+-- Chức năng quản lý 1 nhân viên (nhân viên)
+IF OBJECT_ID('dbo.chucnangquanly_select_nv','P') IS NOT NULL
+BEGIN
+	drop proc chucnangquanly_select_nv
+END
+go
+create proc chucnangquanly_select_nv @MANV CHAR(5) , @SDT VARCHAR(15),  @DCHI_NV NVARCHAR(250)
+as 
+begin transaction
+BEGIN TRY
+	select MA_NV, TEN_NV, SDT, DCHI_NV, NGSINH, LUONG, USER_NV, LAMVIEC
+		from NHANVIEN
+		where MA_NV = @MANV
+	IF @DCHI_NV IS NOT NULL
+		BEGIN
+			UPDATE NHANVIEN SET DCHI_NV = @DCHI_NV WHERE MA_NV = @MANV
+		END
+	IF @SDT IS NOT NULL
+	BEGIN
+				UPDATE NHANVIEN SET SDT= @SDT WHERE MA_NV = @MANV
+	END
+	--SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV
+END TRY
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+
+-- Chức năng chỉnh sửa loại nhà thuê
+IF OBJECT_ID('dbo.chinhsua_loainha_thue','P') IS NOT NULL
+BEGIN
+	drop proc chinhsua_loainha_thue
+END
+go
+
+create proc chinhsua_loainha_thue @MANHA CHAR(5) = NULL, @MA_LN CHAR(5) = NULL,
+	@TIENTHUE INTEGER = NULL, @SLP INTEGER = NULL, @KHUVUC NVARCHAR(30) = NULL, @DUONG NVARCHAR(30) = NULL, @QUAN NVARCHAR(30) = NULL,
+	@TPHO NVARCHAR(40) = NULL, @NHH DATE = NULL, @CHINHANH CHAR(5) = NULL,  @TINHTRANG NVARCHAR(100) = NULL
+as
+begin transaction
+	begin try
+		IF @MA_LN IS NOT NULL
+		BEGIN
+			UPDATE NHA SET MALN = @MA_LN WHERE MA_NHA = @MANHA
+		END
+
+		IF @TINHTRANG IS NOT NULL
+		BEGIN
+			UPDATE NHA SET TINHTRANG = @TINHTRANG WHERE MA_NHA = @MANHA
+		END
+
+		IF @TIENTHUE IS NOT NULL
+		BEGIN
+			UPDATE NHATHUE SET TIENTHUETHANG = @TIENTHUE WHERE MA_NHA = @MANHA
+		END
+
+		IF @KHUVUC IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET KHUVUC = @KHUVUC WHERE MA_NHA = @MANHA
+		END
+
+		IF @DUONG IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET DUONG = @DUONG WHERE MA_NHA = @MANHA
+		END
+
+		IF @QUAN IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET QUAN = @QUAN WHERE MA_NHA = @MANHA
+		END
+
+		IF @TPHO IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET TPHO = @TPHO WHERE MA_NHA = @MANHA
+		END
+
+		IF @NHH IS NOT NULL
+		BEGIN
+			UPDATE NHA SET NGAYHETHAN = @NHH WHERE MA_NHA = @MANHA
+		END
+
+		IF @SLP IS NOT NULL
+		BEGIN
+			UPDATE NHA SET SLPHONG = @SLP WHERE MA_NHA = @MANHA
+		END
+
+		IF @CHINHANH IS NOT NULL
+		BEGIN
+			UPDATE NHA SET MA_CN = @CHINHANH WHERE MA_NHA = @MANHA
+		END
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+
+EXEC chinhsua_loainha_thue 'N0010'
+
+SELECT * FROM NHA
+
+
+-- Chức năng chỉnh sửa loại nhà bán
+IF OBJECT_ID('dbo.chinhsua_loainha_ban','P') IS NOT NULL
+BEGIN
+	drop proc chinhsua_loainha_ban
+END
+go
+
+create proc chinhsua_loainha_ban @MANHA CHAR(5) = NULL,@MA_LN CHAR(5) = NULL, @GIABAN INTEGER = NULL, @SLP INTEGER = NULL,
+	 @KHUVUC NVARCHAR(30) = NULL, @DUONG NVARCHAR(30) = NULL, @QUAN NVARCHAR(30) = NULL,
+	@TPHO NVARCHAR(40) = NULL, @NHH DATE = NULL,  @TINHTRANG NVARCHAR(100) = NULL, @CHINHANH CHAR(5) = NULL
+
+as
+begin transaction
+	begin try
+		IF @MA_LN IS NOT NULL
+		BEGIN
+			UPDATE NHA SET MALN = @MA_LN WHERE MA_NHA = @MANHA
+		END
+
+		IF @TINHTRANG IS NOT NULL
+		BEGIN
+			UPDATE NHA SET TINHTRANG = @TINHTRANG WHERE MA_NHA = @MANHA
+		END
+
+		IF @GIABAN IS NOT NULL
+		BEGIN
+			UPDATE NHABAN SET GIABAN = @GIABAN WHERE MA_NHA = @MANHA
+		END
+
+		IF @KHUVUC IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET KHUVUC = @KHUVUC WHERE MA_NHA = @MANHA
+		END
+
+		IF @DUONG IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET DUONG = @DUONG WHERE MA_NHA = @MANHA
+		END
+
+		IF @QUAN IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET QUAN = @QUAN WHERE MA_NHA = @MANHA
+		END
+
+		IF @TPHO IS NOT NULL
+		BEGIN
+			UPDATE DCHINHA SET TPHO = @TPHO WHERE MA_NHA = @MANHA
+		END
+
+		IF @NHH IS NOT NULL
+		BEGIN
+			UPDATE NHA SET NGAYHETHAN = @NHH WHERE MA_NHA = @MANHA
+		END
+
+		IF @SLP IS NOT NULL
+		BEGIN
+			UPDATE NHA SET SLPHONG = @SLP WHERE MA_NHA = @MANHA
+		END
+
+		IF @CHINHANH IS NOT NULL
+		BEGIN
+			UPDATE NHA SET MA_CN = @CHINHANH WHERE MA_NHA = @MANHA
+		END
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+/*EXEC chinhsua_loainha_ban @MANHA = 'N0001', @MA_LN = NULL, @TINHTRANG = NULL,
+	@GIABAN = 400000, @KHUVUC = NULL, @DUONG =NULL, @QUAN = NULL,
+	@TPHO = NULL, @NHH = NULL, @SLP = NULL, @CHINHANH = NULL
+go*/
+
+-- Chức năng lập hợp đồng b1
+IF OBJECT_ID('dbo.laphopdong_b1','P') IS NOT NULL
+BEGIN
+	drop proc laphopdong_b1
+END
+go
+
+create proc laphopdong_b1 @manha char(5)
+as 
+begin transaction
+	begin try
+		select TEN_CNHA, SLPHONG, TENLN, GIABAN, TINHTRANG, DKCHUNHA, DUONG, QUAN, TPHO
+		FROM CHUNHA, LOAINHA, NHABAN, DCHINHA, NHA
+		WHERE CHUNHA.MA_CNHA = (SELECT MA_CNHA FROM NHA WHERE MA_NHA = @manha)
+			AND LOAINHA.MA_LN = (SELECT MALN FROM NHA WHERE MA_NHA = @manha)
+			AND NHABAN.MA_NHA = @manha
+			AND DCHINHA.MA_NHA = @manha
+			AND NHA.MA_NHA = @manha
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+--exec laphopdong_b1 @manha = 'N0001'
+--go
+
+-- Chức năng lập hợp đồng b2
+IF OBJECT_ID('dbo.laphopdong_b2','P') IS NOT NULL
+BEGIN
+	drop proc laphopdong_b2
+END
+go
+
+create proc laphopdong_b2 @manha char(5), @manv char(5)
+as 
+begin transaction
+	begin try
+		declare @ngaybd date
+		declare @ngaykt date      
+		set @ngaybd = getdate()
+		set @ngaykt = DATEADD(day,2,@ngaybd)
+		if @manha = (select MA_NHA from NHATHUE where MA_NHA = @manha)
+			begin
+				insert into HOPDONG(MA_HD, TRANGTHAI_HD, NGAYBD_HD,NGAYKT_HD,MA_NHA)
+				values  ('HD002','HDT',@ngaybd,NULL,@manha)
+			end
+		else if @manha = (select MA_NHA from NHABAN where MA_NHA = @manha)
+			begin
+				insert into HOPDONG(MA_HD, TRANGTHAI_HD, NGAYBD_HD,NGAYKT_HD,MA_NHA, NDCV)
+				values  ('HD002','HDB',@ngaybd,@ngaykt,@manha,'ok')
+			end
+		select TEN_CNHA, DCHI_CNHA, SDT
+		FROM CHUNHA
+		WHERE MA_CNHA = 'CN001'
+
+		select TEN_KH, DCHI_KH,SDT
+		FROM KHACHHANG
+		WHERE MA_KH = 'KH001'
+
+		select TEN_NV, NGAYBD_HD, NGAYKT_HD
+		FROM NHANVIEN, HOPDONG
+		WHERE LAMVIEC = (select MA_CN from NHA where MA_NHA = @manha) 
+			AND HOPDONG.MA_NHA = @manha
+			AND NHANVIEN.MA_NV = @manv
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+--exec laphopdong_b2 @manha = 'N0001', @MANV = 'NV001'
+--go
+
+--SELECT * FROM HOPDONG;
+IF OBJECT_ID('dbo.laphopdong_b2','P') IS NOT NULL
+BEGIN
+	drop proc laphopdong_b2
+END
+go
+
+create proc laphopdong_b2 @manha char(5), @manv char(5)
+as 
+begin transaction
+	begin try
+		declare @ngaybd date
+		declare @ngaykt date      
+		set @ngaybd = getdate()
+		set @ngaykt = DATEADD(day,2,@ngaybd)
+
+		select TEN_CNHA, DCHI_CNHA, SDT
+		FROM CHUNHA
+		WHERE MA_CNHA = 'CN001'
+
+		select TEN_KH, DCHI_KH,SDT
+		FROM KHACHHANG
+		WHERE MA_KH = 'KH001'
+
+		select TEN_NV, MA_HD, NGAYBD_HD, NGAYKT_HD
+		FROM NHANVIEN, HOPDONG
+		WHERE LAMVIEC = (select MA_CN from NHA where MA_NHA = @manha) 
+			AND HOPDONG.MA_NHA = @manha
+			AND NHANVIEN.MA_NV = @manv
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+-- Chức năng lập hợp đồng b3
+IF OBJECT_ID('dbo.laphopdong_chuky_b3','P') IS NOT NULL
+BEGIN
+	drop proc laphopdong_chuky_b3
+END
+go
+
+create proc laphopdong_chuky_b3 @mahd char(5), @makh char(5)--ben mua
+as
+	begin transaction
+		begin try
+			update HOPDONG set MA_KH = @makh where MA_HD = @mahd
+		end try
+		begin catch
+			print N'Chức năng thực hiện không thành công.'
+			rollback transaction
+			return;
+		end catch
+commit transaction
+go
+
+-- Chức năng lập hợp đồng b4
+IF OBJECT_ID('dbo.laphopdong_chuky_b4','P') IS NOT NULL
+BEGIN
+	drop proc laphopdong_chuky_b4
+END
+go
+
+create proc laphopdong_chuky_b4 @mahd char(5), @macn char(5)--ben ban
+as
+	begin transaction
+		begin try
+			update HOPDONG set MA_CNHA = @macn where MA_HD = @mahd
+		end try
+		begin catch
+			print N'Chức năng thực hiện không thành công.'
+			rollback transaction
+			return;
+		end catch
+commit transaction
+go
+--exec laphopdong_b2 @mahd = 'HD001'
+--exec laphopdong_chuky_b3
+--exec laphopdong_chuky_b4
+
+/*Chỉnh sửa thông tin cá nhân của một nhân viên */
+IF OBJECT_ID('CHINHSUA_PROFILENV','P') IS NOT NULL
+BEGIN
+	drop proc CHINHSUA_PROFILENV
+END
+go
+
+CREATE PROCEDURE CHINHSUA_PROFILENV 
+@MANV CHAR(5), @TENNV NVARCHAR(50) = NULL, @SDT VARCHAR(15) = NULL, @DCHI NVARCHAR(250) = NULL, @DOB DATE = NULL
+AS
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
+BEGIN TRAN
+		BEGIN TRY
+			IF (NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV))
+			BEGIN
+				PRINT 'Nhân viên này không tồn tại'
+				ROLLBACK TRANSACTION
+				RETURN;
+			END
+			IF @TENNV IS NOT NULL
+				UPDATE NHANVIEN
+				SET NHANVIEN.TEN_NV = @TENNV
+				WHERE NHANVIEN.MA_NV = @MANV 
+			IF @SDT IS NOT NULL
+				UPDATE NHANVIEN
+				SET NHANVIEN.SDT = @SDT
+				WHERE NHANVIEN.MA_NV = @MANV 
+			IF @DCHI IS NOT NULL
+				UPDATE NHANVIEN
+				SET NHANVIEN.DCHI_NV = @DCHI
+				WHERE NHANVIEN.MA_NV = @MANV 
+			IF @DOB IS NOT NULL
+				UPDATE NHANVIEN
+				SET NHANVIEN.NGSINH = @DOB
+				WHERE NHANVIEN.MA_NV = @MANV 
+			--Show ra thong tin sau khi chinh sua---
+			DECLARE @CHINHANHNVQL CHAR(5) = (SELECT NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV)
+			SELECT NHANVIEN.MA_NV, NHANVIEN.TEN_NV,
+			NHANVIEN.LUONG, NHANVIEN.LAMVIEC FROM NHANVIEN WHERE NHANVIEN.LAMVIEC = @CHINHANHNVQL AND NHANVIEN.MA_NV = @MANV
+		END TRY
+		BEGIN CATCH
+					IF(ERROR_NUMBER() = 1205)
+				 BEGIN
+					 SELECT 'Deadlock Occurred. The Transaction has failed. Please retry'
+				 END
+				 -- Rollback the transaction
+				 ROLLBACK TRANSACTION
+				 RETURN;
+		END CATCH 
+		PRINT N'Chỉnh sửa thông tin cá nhân thành công'
+COMMIT TRAN
+
+EXEC CHINHSUA_PROFILENV 'NV013',N'Long Phát Đạt'
+
+IF OBJECT_ID('dbo.capnhat_thongtin_chunha','P') IS NOT NULL
+BEGIN
+	drop proc capnhat_thongtin_chunha
+END
+go
+
+create proc capnhat_thongtin_chunha @machunha char(5), @ten NVARCHAR(50), @dchi NVARCHAR(250),  @SDT VARCHAR(15),  @PASS_CNHA VARCHAR(50)
+as 
+begin transaction
+	begin try
+		IF @ten is not null
+		BEGIN
+			UPDATE CHUNHA SET TEN_CNHA = @ten WHERE MA_CNHA = @machunha
+		END
+		IF @dchi is not null
+		BEGIN
+			UPDATE CHUNHA SET DCHI_CNHA= @dchi WHERE MA_CNHA = @machunha
+		END
+		IF @SDT IS NOT NULL
+		BEGIN
+			UPDATE CHUNHA SET SDT = @SDT WHERE MA_CNHA = @machunha
+		END
+		IF @PASS_CNHA IS NOT NULL
+		BEGIN
+			UPDATE CHUNHA SET PASS_CNHA = @PASS_CNHA WHERE MA_CNHA = @machunha
+		END
+	end try
+	begin catch
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	end catch
+commit transaction
+go
+
+/*Tăng thưởng/trừ lương: dựa trên số nhà phụ trách được + nếu số nhà phụ trách được > 3 ==> cộng thêm 3000, ngược lại trừ đi 2000  */
+IF OBJECT_ID('TANGGIAM_LUONGNV','P') IS NOT NULL
+BEGIN
+	drop proc TANGGIAM_LUONGNV
+END
+go
+
+CREATE PROC TANGGIAM_LUONGNV @MANV CHAR(5), @BONUSTIP FLOAT =0
+AS
+BEGIN TRANSACTION
+	BEGIN TRY
+		IF (NOT EXISTS (SELECT * FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV))
+		BEGIN
+			print N'Không tồn tại mã nhân viên này'
+			rollback transaction
+			return;
+		END
+		DECLARE @SONHAPHUTRACH INT = (SELECT COUNT(MA_NHA)
+											FROM NHA
+											WHERE NVPT = @MANV
+											GROUP BY NVPT)
+		DECLARE @LUONGNV FLOAT
+		SELECT @LUONGNV = LUONG
+		FROM NHANVIEN WHERE NHANVIEN.MA_NV = @MANV
+
+		DECLARE @SOTIENBITRU FLOAT = 0;
+		/*Nếu số nhà phụ trách lớn hơn 10 ==> thưởng 5000 */
+		/*Nếu số nhà phụ trách < 10 && >= 5 ==> trừ 2000 */
+		/*Nếu số nhà phụ trách < 5 && >= 2 ==> trừ 3000 */
+		/*Nếu số nhà phụ trách < 2 ==> trừ 4500 */
+
+		IF(@SONHAPHUTRACH >= 10)
+		BEGIN
+			SET @SOTIENBITRU = 5000
+			SET @LUONGNV = @LUONGNV + @SOTIENBITRU + @BONUSTIP
+				---Cập nhật lương
+			UPDATE NHANVIEN SET LUONG = @LUONGNV
+			WHERE NHANVIEN.MA_NV = @MANV
+		END
+		ELSE IF (@SONHAPHUTRACH >=5 AND @SONHAPHUTRACH <10 )
+		BEGIN
+			SET @SOTIENBITRU = 2000
+			SET @LUONGNV = @LUONGNV + @BONUSTIP - @SOTIENBITRU 
+			---Cập nhật lương
+			UPDATE NHANVIEN SET LUONG = @LUONGNV
+			WHERE NHANVIEN.MA_NV = @MANV
+		END
+		ELSE IF (@SONHAPHUTRACH >=2 AND @SONHAPHUTRACH < 5)
+		BEGIN
+			SET @SOTIENBITRU = 3000
+			SET @LUONGNV = @LUONGNV  + @BONUSTIP - @SOTIENBITRU
+			---Cập nhật lương
+			UPDATE NHANVIEN SET LUONG = @LUONGNV
+			WHERE NHANVIEN.MA_NV = @MANV
+		END
+		ELSE IF (@SONHAPHUTRACH < 2)
+		BEGIN
+			SET @SOTIENBITRU = 4500
+			SET @LUONGNV = @LUONGNV  + @BONUSTIP - @SOTIENBITRU
+			---Cập nhật lương
+			UPDATE NHANVIEN SET LUONG = @LUONGNV
+			WHERE NHANVIEN.MA_NV = @MANV
+		END
+		PRINT @LUONGNV
+	END TRY
+	BEGIN CATCH
+		print N'Chức năng thực hiện không thành công.'
+		rollback transaction
+		return;
+	END CATCH
+	PRINT N'Cập nhật lương cho nhân viên thành công';
+COMMIT TRANSACTION
+--EXEC TANGGIAM_LUONGNV 'NV001',9000
+
+

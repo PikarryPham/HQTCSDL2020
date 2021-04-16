@@ -1,0 +1,4 @@
+USE QLBAN_THUENHA
+GO
+
+EXEC chucnangquanly_select_LU2 'NV001',4500,NULL,NULL

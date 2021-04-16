@@ -1,0 +1,14 @@
+﻿/*Xem thong tin chi tiet cua nha ban*/
+/*Unrepeatable Data*/
+USE QLBAN_THUENHA
+GO
+
+
+
+EXEC chinhsua_loainha_ban 'N0006','LN003',730000
+
+SELECT * FROM NHA, NHABAN WHERE NHABAN.MA_NHA = NHA.MA_NHA AND NHA.MA_NHA = 'N0010'
+SELECT * FROM NHA, NHABAN WHERE NHABAN.GIABAN < 700000 AND NHABAN.MA_NHA = NHA.MA_NHA
+
+
+

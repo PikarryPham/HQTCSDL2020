@@ -1,0 +1,6 @@
+/*transaction 2*/
+
+USE QLBAN_THUENHA
+GO
+
+EXEC THONGKE 

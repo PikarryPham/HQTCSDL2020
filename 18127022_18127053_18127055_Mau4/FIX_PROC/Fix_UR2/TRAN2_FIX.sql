@@ -1,0 +1,12 @@
+﻿/*Xem thong tin chi tiet cua nha ban*/
+/*Unrepeatable Data*/
+USE QLBAN_THUENHA
+GO
+
+DECLARE @CODE INT, @MESS NVARCHAR(100)
+
+EXEC chinhsua_loainha_ban_FIX 'N0006','LN002',300000, @RETURNCODE = @CODE, @RETURNMESS = @MESS
+
+SELECT * FROM NHA, NHABAN WHERE NHABAN.MA_NHA = NHA.MA_NHA
+
+

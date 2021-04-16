@@ -1,0 +1,11 @@
+﻿/*Cập nhật, chỉnh sửa thông tin một nhà bán*/
+/*Unrepeatable Data*/
+
+USE QLBAN_THUENHA
+GO
+
+
+DECLARE @CODE INT, @MESS NVARCHAR(100)
+EXEC thongtinchitiet_NB_FIX_UR1 'N0010',1, @RETURNCODE = @CODE, @RETURNMESS = @MESS
+
+SELECT * FROM NHA, NHABAN WHERE NHABAN.MA_NHA = NHA.MA_NHA AND NHA.MA_NHA = 'N0010'

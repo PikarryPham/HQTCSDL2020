@@ -1,0 +1,27 @@
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csprojAssemblyReference.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.Properties.Resources.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.GenerateResource.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.CoreCompileInputs.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe.config
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.pdb
+C:\Desktop\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe.config
+C:\Desktop\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.pdb
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csprojAssemblyReference.cache
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.Properties.Resources.resources
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.GenerateResource.cache
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.CoreCompileInputs.cache
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.pdb
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe.config
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.exe
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\bin\Debug\DataAccess.pdb
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csprojAssemblyReference.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.Properties.Resources.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.GenerateResource.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.csproj.CoreCompileInputs.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.exe
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\DataAccess\obj\Debug\DataAccess.pdb

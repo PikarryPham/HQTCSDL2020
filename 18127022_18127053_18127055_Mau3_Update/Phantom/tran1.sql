@@ -1,0 +1,14 @@
+﻿/*transaction 1*/
+
+USE QLBAN_THUENHA
+GO
+
+
+EXEC INSERT_HOUSE_BAN_CHUNHA 'LN003','2021-01-20',2,N'Nhà cho bán nguyên căn mặt tiền đường có đầy đủ giấy tờ',400000,'KVI', N'Nguyễn Văn Cừ','Q.5','TP.HCM','CI001',N'Đặt cọc trước 50% . Nếu hủy sẽ hoàn tiền lại gấp đôi'
+
+----SAU KHI TEST XONG CO THE DUNG LENH NAY DE XOA DI ROI TEST LAI NEU MUON
+DELETE NHABAN WHERE NHABAN.MA_NHA = 'N0011'
+DELETE DCHINHA WHERE DCHINHA.MA_NHA  = 'N0011'
+DELETE NHA WHERE NHA.MA_NHA = 'N0011'
+
+SELECT * FROM NHA

@@ -1,0 +1,74 @@
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe.config
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csprojAssemblyReference.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountNV.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.Properties.Resources.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.GenerateResource.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CoreCompileInputs.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.FormLogin.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe.config
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountCN.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountKH.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountOption.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CopyComplete
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe.config
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe.config
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csprojAssemblyReference.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CNDashboard.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountCN.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountKH.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountNV.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountOption.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.FormLogin.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.KHDashboard.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVDashboard.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVQLDashboard.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.Properties.Resources.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.GenerateResource.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CoreCompileInputs.cache
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CopyComplete
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.exe
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.pdb
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.FindHouseOnPrice.resources
+C:\Desktop\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.UC_Nha.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe.config
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.exe
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\MuaBanNhaDat.pdb
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.pdb
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\bin\Debug\DataAccess.exe.config
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csprojAssemblyReference.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.ThongKeNhaBan.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.DangThongTinNha.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CNDashboard.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountCN.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountKH.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.ChinhSuaThongTinNha.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVQLQLTTCNV.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVEditProfile.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountNV.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.CreateAccountOption.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.FindHouseOnPrice.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.FormLogin.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.KHDashboard.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVDashboard.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.NVQLDashboard.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.Properties.Resources.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.UC_Nha.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.UpdateHouseInfo.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.GenerateResource.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CoreCompileInputs.cache
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.csproj.CopyComplete
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.exe
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.pdb
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.TANGGIAMLUONGCHONV.resources
+C:\Users\Admin\OneDrive - VNU-HCMUS\Trang Grade 3\HQT-CSDL\18127022_18127055_18127053\18127022_18127055_18127055_Mau4\MuaBanNhaDat\MuaBanNhaDat\obj\Debug\MuaBanNhaDat.QUANLYTHONGTIN1NV.resources

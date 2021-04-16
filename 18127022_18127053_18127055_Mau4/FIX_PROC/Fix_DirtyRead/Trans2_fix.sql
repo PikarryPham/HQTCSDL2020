@@ -1,0 +1,14 @@
+-- nhà bán
+USE QLBAN_THUENHA
+GO
+
+
+waitfor delay '00:00:01'
+use QLBAN_THUENHA
+go
+
+DECLARE @CODE INT, @MESS NVARCHAR(100)
+EXEC thongtinchitiet_NB_FIX_DIRTY 'N0001' ,1, @RETURNCODE = @CODE, @RETURNMESS = @MESS
+go
+
+
