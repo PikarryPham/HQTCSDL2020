@@ -4,3 +4,6 @@
 
 ## Ngôn ngữ sử dụng
 MSSQL và C#
+
+## Hướng dẫn sử dụng 
+
